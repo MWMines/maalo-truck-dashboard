@@ -22,11 +22,7 @@ export function LayoutControls({ variant, collapsible, contentLayout }: LayoutCo
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button size="icon">
-          <Settings />
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger asChild></PopoverTrigger>
       <PopoverContent align="end">
         <div className="flex flex-col gap-5">
           <div className="space-y-1.5">
