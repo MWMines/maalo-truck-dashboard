@@ -1,121 +1,81 @@
-import Link from "next/link";
+"use client";
 
-import { DriverSection } from "@/components/ui/DriverSection";
-import TruckDashboardHeader from "@/components/ui/TruckDashboardHeader";
-import TruckInfoCard from "@/components/ui/TruckInfoCard";
+import { useEffect, useState } from "react";
+
+import axios from "axios";
+import { Filter } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useAuth } from "@/lib/use-auth"; // <-- Import the hook
+
+import TruckPage from "./truck-page";
+
+type TripStatisticsDTO = {
+  totalTrips: number;
+  inTransientTrips: number;
+  totalDistance: number;
+  totalEarnings: number;
+};
+
+const titleMap: Record<keyof TripStatisticsDTO, string> = {
+  totalTrips: "Total Trips",
+  inTransientTrips: "Trips In-Transit",
+  totalDistance: "Total Distance (km)",
+  totalEarnings: "Total Earnings (₹)",
+};
+
+function dtoToStats(dto: TripStatisticsDTO) {
+  return Object.entries(dto).map(([key, value]) => ({
+    title: titleMap[key as keyof TripStatisticsDTO] ?? key,
+    value,
+    change: 0,
+  }));
+}
+const tabs = ["Upcoming", "In-progress", "Completed", "Action needed", "All Trips"];
+
+type Props = {
+  tripStats: TripStatisticsDTO;
+};
 
 export default function Page() {
-  const truckInfo = {
-    truckNo: "DL 09 GF 6677",
-    vehicleClass: "Other Goods Vehicles",
-    engineNo: "ENB47453B79",
-    chassisNo: "AB47453B79",
-    ulw: "1000Kgs",
-    makerDesc: "Sample Description",
-  };
+  const isAuthenticated = useAuth(); // <-- Use the hook
 
-  const ownerInfo = {
-    ownerName: "Ramesh Kumar",
-    companyName: "ABC Company",
-    gstNo: "XXXXXXXXX",
-    panNo: "Sample Description",
-    email: "Sampleemail@gmail.com",
-    contactNo: "9988776655",
-  };
+  const [selectedTab, setSelectedTab] = useState("Upcoming");
+  const [tripStatistics, setTripStatistics] = useState<any>([]);
+  const stats = dtoToStats(tripStatistics);
 
-  const drivers = [
-    {
-      name: "Rajesh Kumar",
-      rating: 4.8,
-      efficiency: 90,
-      contact: "9988776655",
-      totalTrips: 13,
-      totalEarnings: "₹45,670",
-      link: "#",
-    },
-    {
-      name: "Sunit Verma",
-      rating: 4.8,
-      efficiency: 70,
-      contact: "9988776655",
-      totalTrips: 13,
-      totalEarnings: "₹45,670",
-      link: "#",
-    },
-  ];
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/api/trips/statistics")
+      .then((response) => {
+        setTripStatistics(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching trips data:", error);
+      });
+  }, []);
+
+  if (!isAuthenticated) {
+    return null; // Or a loading spinner
+  }
+
   return (
-    <div className="@container/main flex flex-col gap-4 md:gap-6">
-      <main className="flex-1 space-y-6 p-6">
-        <TruckDashboardHeader />
-        <div className="grid grid-cols-6 gap-4">
-          {[
-            { label: "Total Trips", value: "127" },
-            { label: "Completed Trips", value: "118" },
-            { label: "Ongoing Trips", value: "118" },
-            { label: "Avg Fuel Efficiency", value: "6.2 km/l" },
-            { label: "Truck Earnings", value: "₹45,670" },
-            {
-              label: "IT Strength",
-              value: (
-                <div className="w-full">
-                  <div className="mb-1 flex justify-between text-sm">
-                    <span className="text-green-600">Strong</span>
-                    <span>70%</span>
-                  </div>
-                  <div className="h-2 w-full rounded-full bg-gray-200">
-                    <div className="h-2 w-[70%] rounded-full bg-green-500" />
-                  </div>
-                </div>
-              ),
-            },
-          ].map(({ label, value }) => (
-            <div key={label} className="rounded-lg bg-white p-4 shadow-sm">
-              <div className="text-sm text-gray-500">{label}</div>
-              <div className="text-lg font-semibold">{value}</div>
-            </div>
-          ))}
+    <div className="min-h-screen space-y-3 p-1">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Fleet Management</h1>
+          <p className="mt-1 text-gray-600">Manage your truck fleet, drivers, and maintenance schedule.</p>
         </div>
-
-        <TruckInfoCard truckInfo={truckInfo} ownerInfo={ownerInfo} />
-        <DriverSection />
-        <div className="rounded-lg bg-white p-4 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-medium">Recent Trips</h2>
-            <Link href="/dashboard/trips" className="text-sm text-blue-500">
-              View all trips
-            </Link>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              {
-                route: "Mumbai → Delhi",
-                amount: "₹5,000",
-                trips: "8 Trips",
-              },
-              {
-                route: "Chennai → Bangalore",
-                amount: "₹89,500",
-                trips: "12 Trips",
-              },
-              {
-                route: "Pune → Hyderabad",
-                amount: "₹1,85,000",
-                trips: "12 Trips",
-              },
-            ].map((trip, idx) => (
-              <div key={idx} className="space-y-2 rounded-lg border bg-blue-100 p-4">
-                <div className="font-medium text-gray-700">{trip.route}</div>
-                <div className="flex flex-col items-start justify-between sm:flex-row sm:items-center">
-                  <div className="font-semibold text-green-600">{trip.amount}</div>
-                  <div className="inline-block rounded-full rounded-lg border bg-blue-100 bg-white px-2 py-0.5 text-xs text-blue-700">
-                    {trip.trips}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </main>
+        <Button variant="outline" className="gap-2">
+          <Filter size={16} />
+          Add New Truck
+        </Button>
+      </div>
+      <Card className="p-4">
+        <TruckPage />
+      </Card>
     </div>
   );
 }

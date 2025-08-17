@@ -1,58 +1,68 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import axios from "axios";
 import { Filter } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { useAuth } from "@/lib/use-auth"; // <-- Import the hook
 
-const stats = [
-  { title: "Total Trips Completed", value: 127, change: 10 },
-  { title: "Trips In-Transit", value: 117, change: 10 },
-  { title: "Total Distance", value: "117 Km", change: 10 },
-  { title: "Total Earnings", value: "₹3,10,700", change: 10 },
-];
+import TripsPage from "./trip-table";
 
+type TripStatisticsDTO = {
+  totalTrips: number;
+  inTransientTrips: number;
+  totalDistance: number;
+  totalEarnings: number;
+};
+
+const titleMap: Record<keyof TripStatisticsDTO, string> = {
+  totalTrips: "Total Trips",
+  inTransientTrips: "Trips In-Transit",
+  totalDistance: "Total Distance (km)",
+  totalEarnings: "Total Earnings (₹)",
+};
+
+function dtoToStats(dto: TripStatisticsDTO) {
+  return Object.entries(dto).map(([key, value]) => ({
+    title: titleMap[key as keyof TripStatisticsDTO] ?? key,
+    value,
+    change: 0,
+  }));
+}
 const tabs = ["Upcoming", "In-progress", "Completed", "Action needed", "All Trips"];
 
-const trips = [
-  {
-    refNo: "028/187634/3024",
-    truckNo: "RJ50GA6963",
-    buyer: "CHEMICAL & MINERAL INDUSTRIES",
-    material: "Limestone",
-    status: "Trips Finalised",
-    driver: { name: "Arjun Ram", phone: "9601497326" },
-  },
-  {
-    refNo: "028/187634/3024",
-    truckNo: "RJ20EG4714",
-    buyer: "BIRLA CORPORATION LTD.",
-    material: "Limestone",
-    status: "Truck left site",
-    driver: { name: "ANIL", phone: "9941018726" },
-  },
-  {
-    refNo: "028/188820/0434",
-    truckNo: "RJ20CG5773",
-    buyer: "LARSEN & TOUBRO LIMITED",
-    material: "Limestone",
-    status: "Truck left site",
-    driver: { name: "BHOM SINGH", phone: "9467545128" },
-  },
-];
+type Props = {
+  tripStats: TripStatisticsDTO;
+};
 
 export default function Page() {
-  const [selectedTab, setSelectedTab] = useState("Upcoming");
-  const [searchQuery, setSearchQuery] = useState("");
+  const isAuthenticated = useAuth(); // <-- Use the hook
 
-  const filteredTrips = trips.filter((trip) => trip.truckNo.toLowerCase().includes(searchQuery.toLowerCase()));
+  const [selectedTab, setSelectedTab] = useState("Upcoming");
+  const [tripStatistics, setTripStatistics] = useState<any>([]);
+  const stats = dtoToStats(tripStatistics);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/api/trips/statistics")
+      .then((response) => {
+        setTripStatistics(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching trips data:", error);
+      });
+  }, []);
+
+  if (!isAuthenticated) {
+    return null; // Or a loading spinner
+  }
 
   return (
-    <div className="min-h-screen space-y-6 p-6">
+    <div className="min-h-screen space-y-3 p-1">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Trips</h1>
@@ -68,10 +78,10 @@ export default function Page() {
       <Card>
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Trips Statistics Overview</CardTitle>
-          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             {stats.map((stat) => (
-              <Card key={stat.title} className="p-4">
-                <CardDescription className="text-gray-500">{stat.title}</CardDescription>
+              <Card key={stat.title} className="from-grey-50 via-grey-100 to-grey-300 bg-gradient-to-b p-4">
+                <CardDescription className="text-blue-500">{stat.title}</CardDescription>
                 <div className="flex items-center justify-between">
                   <span className="text-xl font-bold">{stat.value}</span>
                   <Badge variant="outline" className="border-green-600 text-green-600">
@@ -99,58 +109,7 @@ export default function Page() {
             </button>
           ))}
         </div>
-        <div className="w-full sm:max-w-sm">
-          <Input placeholder="Search for Trucks" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-        </div>
-        <div className="overflow-auto">
-          <table className="min-w-full rounded-lg bg-white shadow-sm">
-            <thead className="bg-gray-100 text-sm text-gray-600">
-              <tr>
-                <th className="p-4 text-left">Reference No</th>
-                <th className="p-4 text-left">Truck No</th>
-                <th className="p-4 text-left">Buyer Name</th>
-                <th className="p-4 text-left">Material</th>
-                <th className="p-4 text-left">Trip Status</th>
-                <th className="p-4 text-left">Driver Info</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTrips.map((trip, idx) => (
-                <tr key={idx} className="border-t">
-                  <td className="p-4 text-sm text-gray-700">{trip.refNo}</td>
-                  <td className="cursor-pointer p-4 text-sm text-blue-600 underline">{trip.truckNo}</td>
-                  <td className="p-4 text-sm text-gray-700">{trip.buyer}</td>
-                  <td className="p-4 text-sm text-gray-700">{trip.material}</td>
-                  <td className="p-4 text-sm">
-                    <Badge variant="outline" className="border-blue-200 bg-blue-50 text-blue-600">
-                      {trip.status}
-                    </Badge>
-                  </td>
-                  <td className="p-4 text-sm text-gray-700">
-                    {trip.driver.name}
-                    <br />
-                    <span className="text-xs text-gray-500">{trip.driver.phone}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="mt-6 flex items-center justify-between">
-          <Button variant="outline" size="sm" disabled>
-            Previous
-          </Button>
-          <div className="flex items-center gap-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((page) => (
-              <button key={page} className="rounded px-3 py-1 text-sm text-gray-700 hover:bg-gray-100">
-                {page}
-              </button>
-            ))}
-          </div>
-          <Button variant="outline" size="sm">
-            Next
-          </Button>
-        </div>
+        <TripsPage />
       </Card>
     </div>
   );

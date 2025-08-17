@@ -2,29 +2,11 @@
 import { useState } from "react";
 import { DriverCard } from "./DriverCard";
 import DriverModal from "./DriverModal";
+import { Driver } from "@/app/(main)/dashboard/fleet/[truckNumber]/page";
 
-const drivers = [
-    {
-        name: "Rajesh Kumar",
-        rating: 4.8,
-        efficiency: 90,
-        contact: "9988776655",
-        totalTrips: 13,
-        totalEarnings: "₹45,670",
-        link: "#",
-    },
-    {
-        name: "Sunit Verma",
-        rating: 4.8,
-        efficiency: 90,
-        contact: "9988776655",
-        totalTrips: 13,
-        totalEarnings: "₹45,670",
-        link: "#",
-    },
-];
 
-export const DriverSection = () => {
+export const DriverSection = (driverInfo:any) => {
+    console.log("DriverSection", driverInfo);
     const [modalOpen, setModalOpen] = useState(false);
     const [mode, setMode] = useState('view');
     const [driverData, setDriverData] = useState({});
@@ -46,9 +28,7 @@ export const DriverSection = () => {
                 </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {drivers.map((driver, idx) => (
-                    <DriverCard key={idx} driver={driver} openModal={openModal} />
-                ))}
+                    <DriverCard driver={driverInfo} openModal={openModal} />
             </div>
             <DriverModal
                 isOpen={modalOpen}
