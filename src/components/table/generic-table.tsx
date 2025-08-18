@@ -65,11 +65,15 @@ function TableRows<T>({ columns, data, loading }: { columns: Column<T>[]; data: 
   if (loading) {
     return (
       <tbody>
-        <tr>
-          <td colSpan={columns.length} className="p-4 text-center text-gray-500">
-            Loading...
-          </td>
-        </tr>
+        {Array.from({ length: 10 }).map((_, idx) => (
+          <tr key={idx}>
+            {columns.map((_, colIdx) => (
+              <td key={colIdx} className="p-4">
+                <div className="h-6 w-full animate-pulse rounded bg-gray-200"></div>
+              </td>
+            ))}
+          </tr>
+        ))}
       </tbody>
     );
   }

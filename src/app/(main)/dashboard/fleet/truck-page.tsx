@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import axios from "axios";
+import api from "@/lib/axios";
 
 import { GenericTable } from "../../../../components/table/generic-table";
 
@@ -131,8 +131,8 @@ export default function TruckPage() {
 
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`http://localhost:8080/api/trucks/list`, {
+    api
+      .get(`/api/trucks/list`, {
         params: {
           page: page - 1,
           size: pageSize,

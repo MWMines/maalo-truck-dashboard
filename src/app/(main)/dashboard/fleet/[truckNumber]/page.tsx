@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 
 import { useParams } from "next/navigation";
 
-import axios from "axios";
-
+import api from "@/lib/axios";
 import { useAuth } from "@/lib/use-auth"; // <-- Import the hook
 import { Truck } from "@/types/truck";
 
@@ -21,8 +20,8 @@ export default function TruckDetailsPage() {
   useEffect(() => {
     if (!truckNumber) return;
     setLoading(true);
-    axios
-      .get(`http://localhost:8080/api/trucks/truck/${truckNumber}`)
+    api
+      .get(`/api/trucks/truck/${truckNumber}`)
       .then((res) => setTruck(res.data))
       .catch(() => setTruck(null))
       .finally(() => setLoading(false));

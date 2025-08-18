@@ -2,32 +2,36 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
+import { jwtDecode } from "jwt-decode";
+
+type JwtPayload = {
+  exp: number;
+  [key: string]: any;
+};
+
+function isTokenExpired(token: string): boolean {
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+    if (!decoded.exp) return true;
+    return Date.now() / 1000 > decoded.exp;
+  } catch {
+    return true;
+  }
+}
+
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
-    if (!token) {
+    if (!token || isTokenExpired(token)) {
+      localStorage.removeItem("jwt");
       setIsAuthenticated(false);
       router.replace("/auth/v2/login");
       return;
     }
-    try {
-      // const decoded: any = jwtDecode(token);
-      // Check expiration (exp is in seconds)
-      //   if (decoded.exp && Date.now() / 1000 > decoded.exp) {
-      //     localStorage.removeItem("jwt");
-      //     setIsAuthenticated(false);
-      //     router.replace("/auth/v2/login");
-      //   } else {
-      setIsAuthenticated(true);
-      // }
-    } catch {
-      localStorage.removeItem("jwt");
-      setIsAuthenticated(false);
-      router.replace("/auth/v2/login");
-    }
+    setIsAuthenticated(true);
   }, [router]);
 
   return isAuthenticated;

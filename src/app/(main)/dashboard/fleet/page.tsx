@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-import axios from "axios";
 import { Filter } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import api from "@/lib/axios";
 import { useAuth } from "@/lib/use-auth"; // <-- Import the hook
 
 import TruckPage from "./truck-page";
@@ -47,8 +47,8 @@ export default function Page() {
   const stats = dtoToStats(tripStatistics);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/trips/statistics")
+    api
+      .get("/api/trips/statistics")
       .then((response) => {
         setTripStatistics(response.data);
       })

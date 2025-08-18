@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-import axios from "axios";
+import api from "@/lib/axios";
 
 import { GenericTable } from "../../../../components/table/generic-table";
 
@@ -104,8 +104,8 @@ export default function TripsPage() {
 
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`http://localhost:8080/api/trips/list?`, {
+    api
+      .get(`/api/trips/list?`, {
         params: {
           page: page - 1,
           size: pageSize,
