@@ -42,13 +42,17 @@ export function LoginForm() {
   });
 
   const [loggedIn, setLoggedIn] = useState(() => {
-    const token = localStorage.getItem("jwt");
-    return token && !isTokenExpired(token);
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("jwt");
+      return token && !isTokenExpired(token);
+    }
+    return false;
   });
   const router = useRouter();
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
+      console.log(api.defaults.baseURL);
       const response = await api.post("/api/auth/login", {
         username: data.username,
         password: data.password,
