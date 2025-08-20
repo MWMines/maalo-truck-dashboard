@@ -5,6 +5,8 @@ import DriverDetailView from './DriverDetailView';
 import DriverForm from './DriverForm';
 
 export default function DriverModal({ isOpen, onClose, mode = 'view', data = {}, onSubmit }) {
+    console.log("====DATA==DATA==", data);
+    
     const modalRef = useRef();
 
     if (!isOpen) return null;

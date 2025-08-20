@@ -2,14 +2,14 @@
 import { useState } from "react";
 import { DriverCard } from "./DriverCard";
 import DriverModal from "./DriverModal";
-import { Driver } from "@/app/(main)/dashboard/fleet/[truckNumber]/page";
+import { useRouter } from 'next/navigation';
 
-
-export const DriverSection = (driverInfo:any) => {
+export const DriverSection = ({ driverInfo, truckId }: any) => {
     console.log("DriverSection", driverInfo);
     const [modalOpen, setModalOpen] = useState(false);
     const [mode, setMode] = useState('view');
     const [driverData, setDriverData] = useState({});
+    const router = useRouter();
 
     const openModal = (modeType: string, data = {}) => {
         setMode(modeType);
@@ -27,9 +27,10 @@ export const DriverSection = (driverInfo:any) => {
                     + Add Driver
                 </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <DriverCard driver={driverInfo} openModal={openModal} />
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-[repeat(auto-fit,_minmax(280px,_1fr))]">
+                {driverInfo?.map((val: any) => <DriverCard key={val.driverId} driver={val} openModal={openModal} />)}
             </div>
+            
             <DriverModal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}

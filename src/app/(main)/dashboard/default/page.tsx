@@ -1,15 +1,19 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, CalendarDays } from "lucide-react";
+import DatePicker from "react-datepicker";
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { NetProfitCard } from "@/components/ui/NetProfitCard";
-import { Progress } from "@/components/ui/progress";
+import TruckEarningsSection from "@/components/ui/TruckEarningsSection";
 import { useAuth } from "@/lib/use-auth";
 
+import "react-datepicker/dist/react-datepicker.css";
+import { useDateRange } from "../../context/date-range-context";
+
 const fleetUtilisationCardSchema = [
-  { title: "Total Trucks", value: "18" },
+  { title: "Registered Trucks", value: "18" },
   { title: "In Tenure", value: "12" },
   { title: "Idle", value: "4" },
   { title: "In Transit", value: "8" },
@@ -37,7 +41,28 @@ const truckEarningDistributionCardSchema = [
     efficiency: 70,
   },
   {
-    title: "MH11JB9239",
+    title: "MH11JB5239",
+    value: "—",
+    status: "Idle (0-tenure)",
+    trips: "0 Trips",
+    efficiency: 10,
+  },
+  {
+    title: "MH11JB4239",
+    value: "—",
+    status: "Idle (0-tenure)",
+    trips: "0 Trips",
+    efficiency: 10,
+  },
+  {
+    title: "MH11JB3239",
+    value: "—",
+    status: "Idle (0-tenure)",
+    trips: "0 Trips",
+    efficiency: 10,
+  },
+  {
+    title: "MH11JB2239",
     value: "—",
     status: "Idle (0-tenure)",
     trips: "0 Trips",
@@ -70,30 +95,9 @@ const FleetSummaryCard = ({ title, value, isAction, actionPercent }: any) => (
   </Card>
 );
 
-const TruckEarningDistributionCard = ({ title, value, status, trips, efficiency }: any) => {
-  let progressColor = "bg-green-600";
-  if (efficiency < 40) progressColor = "bg-red-600";
-  else if (efficiency < 70) progressColor = "bg-yellow-500";
-
-  return (
-    <Card>
-      <CardHeader className="flex flex-col gap-1">
-        <div className="flex w-full justify-between">
-          <CardDescription>{title}</CardDescription>
-          <CardTitle className="text-xl font-semibold">{value}</CardTitle>
-        </div>
-        <div className="flex w-full justify-between text-sm text-gray-600">
-          <span className="border-l-2 border-gray-200 pl-2">{status}</span>
-          <span>{trips}</span>
-        </div>
-        <Progress value={efficiency} className={`${progressColor} h-2 rounded`} />
-      </CardHeader>
-    </Card>
-  );
-};
-
 export default function OwnerDashboard() {
   const isAuthenticated = useAuth();
+  const { globalDateRange, setGlobalDateRange } = useDateRange();
 
   if (!isAuthenticated) {
     return null; // Or a loading spinner
@@ -103,7 +107,33 @@ export default function OwnerDashboard() {
     <div className="min-h-screen space-y-6 p-2">
       <header>
         <h1 className="text-3xl font-bold text-gray-900">Owner Dashboard</h1>
-        <p className="mt-1 text-gray-600">Track revenue, analyze performance, and optimize fleet profitability</p>
+        <div className="mb-3 flex justify-between">
+          <p className="mt-1 text-gray-600">Track revenue, analyze performance, and optimize fleet profitability</p>
+          <div className="flex items-center gap-2 rounded border px-2 py-1 text-xs text-gray-800">
+            <CalendarDays size={14} />
+            <DatePicker
+              selected={globalDateRange.startDate}
+              onChange={(date) => setGlobalDateRange({ ...globalDateRange, startDate: date })}
+              selectsStart
+              startDate={globalDateRange.startDate}
+              endDate={globalDateRange.endDate}
+              placeholderText="Start date"
+              dateFormat="dd MMM yyyy"
+              className="w-[90px] bg-transparent focus:outline-none"
+            />
+            <span className="mx-1">–</span>
+            <DatePicker
+              selected={globalDateRange.endDate}
+              onChange={(date) => setGlobalDateRange({ ...globalDateRange, endDate: date })}
+              selectsEnd
+              startDate={globalDateRange.startDate}
+              endDate={globalDateRange.endDate}
+              placeholderText="End date"
+              dateFormat="dd MMM yyyy"
+              className="w-[90px] bg-transparent focus:outline-none"
+            />
+          </div>
+        </div>
       </header>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
@@ -135,19 +165,7 @@ export default function OwnerDashboard() {
 
         <NetProfitCard />
       </section>
-
-      <section>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Truck Earnings Distribution</CardTitle>
-          </CardHeader>
-          <div className="grid grid-cols-1 gap-4 px-4 pb-4 sm:grid-cols-2 lg:grid-cols-3">
-            {truckEarningDistributionCardSchema.map((item) => (
-              <TruckEarningDistributionCard key={item.title} {...item} />
-            ))}
-          </div>
-        </Card>
-      </section>
+      <TruckEarningsSection truckEarningDistributionCardSchema={truckEarningDistributionCardSchema} />
     </div>
   );
 }

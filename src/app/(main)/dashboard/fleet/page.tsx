@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 
-import { Filter } from "lucide-react";
+import { CalendarDays } from "lucide-react";
+import DatePicker from "react-datepicker";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import api from "@/lib/axios";
 import { useAuth } from "@/lib/use-auth"; // <-- Import the hook
+
+import "react-datepicker/dist/react-datepicker.css";
+import { useDateRange } from "../../context/date-range-context";
 
 import TruckPage from "./truck-page";
 
@@ -33,14 +35,13 @@ function dtoToStats(dto: TripStatisticsDTO) {
     change: 0,
   }));
 }
-const tabs = ["Upcoming", "In-progress", "Completed", "Action needed", "All Trips"];
-
-type Props = {
-  tripStats: TripStatisticsDTO;
-};
 
 export default function Page() {
   const isAuthenticated = useAuth(); // <-- Use the hook
+  const { globalDateRange } = useDateRange();
+  const [localRange, setLocalRange] = useState<{ startDate: Date | null; endDate: Date | null } | null>(null);
+
+  const activeRange = localRange ?? globalDateRange;
 
   const [selectedTab, setSelectedTab] = useState("Upcoming");
   const [tripStatistics, setTripStatistics] = useState<any>([]);
@@ -68,10 +69,36 @@ export default function Page() {
           <h1 className="text-3xl font-bold text-gray-900">Fleet Management</h1>
           <p className="mt-1 text-gray-600">Manage your truck fleet, drivers, and maintenance schedule.</p>
         </div>
-        <Button variant="outline" className="gap-2">
+        <div className="mb-3 flex justify-between">
+          {/* <Button variant="outline" className="gap-2">
           <Filter size={16} />
           Add New Truck
-        </Button>
+        </Button> */}
+          <div className="ml-2 flex items-center gap-2 rounded border px-2 py-1 text-xs text-gray-800">
+            <CalendarDays size={14} />
+            <DatePicker
+              selected={activeRange.startDate}
+              onChange={(date) => setLocalRange({ ...activeRange, startDate: date })}
+              selectsStart
+              startDate={activeRange.startDate}
+              endDate={activeRange.endDate}
+              placeholderText="Start date"
+              dateFormat="dd MMM yyyy"
+              className="w-[90px] bg-transparent focus:outline-none"
+            />
+            <span className="mx-1">–</span>
+            <DatePicker
+              selected={activeRange.endDate}
+              onChange={(date) => setLocalRange({ ...activeRange, startDate: date })}
+              selectsEnd
+              startDate={activeRange.startDate}
+              endDate={activeRange.endDate}
+              placeholderText="End date"
+              dateFormat="dd MMM yyyy"
+              className="w-[90px] bg-transparent focus:outline-none"
+            />
+          </div>
+        </div>
       </div>
       <Card className="p-4">
         <TruckPage />

@@ -2,14 +2,112 @@ import Link from "next/link";
 
 import TruckDashboardHeader from "@/app/(main)/dashboard/fleet/_components/truck-dashboard-header";
 import TruckInfoCard from "@/app/(main)/dashboard/fleet/_components/truck-info-card";
+import { DriverSection } from "@/components/ui/DriverSection";
 
-import DriverSection from "./_components/driver-section";
+const driverList = [
+  {
+    driverId: 104398,
+    name: "BAPAN",
+    dob: null,
+    contactNo: "8101310717",
+    fatherName: null,
+    homeCity: null,
+    preferredLanguages: null,
+    martialStatus: null,
+    spouseName: null,
+    marriageAnniversary: null,
+    kids: null,
+    favouriteSinger: null,
+    favouriteFood: null,
+    interestedNews: null,
+    address: null,
+    landmark: null,
+    locality: null,
+    tehsil: null,
+    district: null,
+    state: null,
+    pincode: null,
+    assignedLevel: "Truck Level",
+  },
+  {
+    driverId: 104397,
+    name: "BAPAN",
+    dob: null,
+    contactNo: "8101310717",
+    fatherName: null,
+    homeCity: null,
+    preferredLanguages: null,
+    martialStatus: null,
+    spouseName: null,
+    marriageAnniversary: null,
+    kids: null,
+    favouriteSinger: null,
+    favouriteFood: null,
+    interestedNews: null,
+    address: null,
+    landmark: null,
+    locality: null,
+    tehsil: null,
+    district: null,
+    state: null,
+    pincode: null,
+    assignedLevel: "Truck Level",
+  },
+  {
+    driverId: 104396,
+    name: "BAPAN",
+    dob: null,
+    contactNo: "8101310717",
+    fatherName: null,
+    homeCity: null,
+    preferredLanguages: null,
+    martialStatus: null,
+    spouseName: null,
+    marriageAnniversary: null,
+    kids: null,
+    favouriteSinger: null,
+    favouriteFood: null,
+    interestedNews: null,
+    address: null,
+    landmark: null,
+    locality: null,
+    tehsil: null,
+    district: null,
+    state: null,
+    pincode: null,
+    assignedLevel: "Truck Level",
+  },
+  {
+    driverId: 104399,
+    name: "BAPAN",
+    dob: null,
+    contactNo: "8101310717",
+    fatherName: null,
+    homeCity: null,
+    preferredLanguages: null,
+    martialStatus: null,
+    spouseName: null,
+    marriageAnniversary: null,
+    kids: null,
+    favouriteSinger: null,
+    favouriteFood: null,
+    interestedNews: null,
+    address: null,
+    landmark: null,
+    locality: null,
+    tehsil: null,
+    district: null,
+    state: null,
+    pincode: null,
+    assignedLevel: "Truck Level",
+  },
+];
 
 export default function TruckMoreInformation({ truckInfo }: any) {
   return (
     <div className="@container/main flex flex-col gap-4 md:gap-6">
       <main className="flex-1 space-y-6 p-6">
-        <TruckDashboardHeader truckNumber={truckInfo.truckNumber} />
+        <TruckDashboardHeader breadcum={`Fleet / ${truckInfo?.truckNumber}`} />
         <div className="grid grid-cols-6 gap-4">
           {[
             { label: "Total Trips", value: "127" },
@@ -40,7 +138,7 @@ export default function TruckMoreInformation({ truckInfo }: any) {
         </div>
 
         <TruckInfoCard truckInfo={truckInfo} />
-        <DriverSection driverInfo={truckInfo.driver} />
+        <DriverSection driverInfo={driverList} truckId={truckInfo.truckNumber} />
         <div className="rounded-lg bg-white p-4 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-medium">Recent Trips</h2>

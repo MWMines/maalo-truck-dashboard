@@ -1,11 +1,15 @@
 "use client";
 
+import { Fragment, useState } from "react";
+
+import Link from "next/link";
+
 import { TrendingUp } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { NetProfitCard } from "@/components/ui/NetProfitCard";
-import { Progress } from "@/components/ui/progress";
+import { TruckDetailsModal } from "@/components/ui/TruckDetailsModal";
 import { useAuth } from "@/lib/use-auth";
 
 const fleetUtilisationCardSchema = [
@@ -71,24 +75,77 @@ const FleetSummaryCard = ({ title, value, isAction, actionPercent }: any) => (
 );
 
 const TruckEarningDistributionCard = ({ title, value, status, trips, efficiency }: any) => {
+  const [open, setOpen] = useState(false);
+
+  const truckData = {
+    title: "Truck: MH-12-AB-1234",
+    dateRange: "Jan 12, 2024 – Jan 18, 2024",
+    totalTrips: 18,
+    completedTrips: 10,
+    ongoingTrips: 9,
+    earnings: "₹45,670",
+    earningsGrowth: "4%",
+    itStrength: { label: "Strong", value: 70 },
+    drivers: [
+      {
+        name: "Rajesh Kumar",
+        rating: 4.8,
+        trips: 12,
+        earnings: "₹45,670",
+        efficiency: 90,
+      },
+      {
+        name: "Sunit Verma",
+        rating: 4.8,
+        trips: 12,
+        earnings: "₹45,670",
+        efficiency: 90,
+      },
+    ],
+    recentTrips: [
+      { route: "Mumbai → Delhi", value: "₹1,45,000", trips: "8 Trips" },
+      { route: "Chennai → Bangalore", value: "₹89,500", trips: "12 Trips" },
+      { route: "Pune → Hyderabad", value: "₹1,85,000", trips: "12 Trips" },
+    ],
+  };
+
   let progressColor = "bg-green-600";
   if (efficiency < 40) progressColor = "bg-red-600";
-  else if (efficiency < 70) progressColor = "bg-yellow-500";
+  else if (efficiency < 70) progressColor = "bg-indigo-600";
+
+  let efficiencyTextColor = "text-green-600";
+  if (efficiency < 40) efficiencyTextColor = "text-red-600";
+  else if (efficiency < 70) efficiencyTextColor = "text-indigo-600";
+
+  const statusClass = status.startsWith("Active") ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800";
 
   return (
-    <Card>
-      <CardHeader className="flex flex-col gap-1">
-        <div className="flex w-full justify-between">
-          <CardDescription>{title}</CardDescription>
-          <CardTitle className="text-xl font-semibold">{value}</CardTitle>
-        </div>
-        <div className="flex w-full justify-between text-sm text-gray-600">
-          <span className="border-l-2 border-gray-200 pl-2">{status}</span>
-          <span>{trips}</span>
-        </div>
-        <Progress value={efficiency} className={`${progressColor} h-2 rounded`} />
-      </CardHeader>
-    </Card>
+    <Fragment>
+      <Card className="w-full max-w-xs" onClick={() => setOpen(true)}>
+        <CardHeader className="space-y-2">
+          <div className="flex items-center justify-between">
+            <CardDescription className="text-sm font-medium text-gray-500">{title}</CardDescription>
+            <CardTitle className="text-lg font-semibold text-green-700">{value}</CardTitle>
+          </div>
+
+          <div className="flex items-center justify-between text-xs text-gray-500">
+            <span className={`rounded px-2 py-0.5 text-xs font-medium ${statusClass}`}>{status}</span>
+            <span className="text-gray-600">{trips} Trips</span>
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs font-medium text-gray-500">
+              <span>Efficiency</span>
+              <span className={`${efficiencyTextColor}`}>{efficiency}%</span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded bg-gray-200">
+              <div className={`h-full rounded ${progressColor}`} style={{ width: `${efficiency}%` }} />
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
+      <TruckDetailsModal isOpen={open} onClose={() => setOpen(false)} truck={truckData} />
+    </Fragment>
   );
 };
 
@@ -137,9 +194,12 @@ export default function OwnerDashboard() {
       </section>
 
       <section>
-        <Card>
-          <CardHeader>
+        <Card className="cursor-pointer">
+          <CardHeader className="flex justify-between">
             <CardTitle className="text-xl font-semibold">Truck Earnings Distribution</CardTitle>
+            <Link href="/dashboard/trips" className="text-sm font-medium text-blue-600 hover:underline">
+              View all trips
+            </Link>
           </CardHeader>
           <div className="grid grid-cols-1 gap-4 px-4 pb-4 sm:grid-cols-2 lg:grid-cols-3">
             {truckEarningDistributionCardSchema.map((item) => (

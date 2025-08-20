@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, Truck } from "lucide-react";
 
 type TruckDashboardHeaderProps = {
-  truckNumber: string;
+  breadcum: string;
 };
 
-export default function TruckDashboardHeader({ truckNumber }: TruckDashboardHeaderProps) {
+export default function TruckDashboardHeader({ breadcum }: TruckDashboardHeaderProps) {
   const router = useRouter();
 
   return (
@@ -19,7 +19,7 @@ export default function TruckDashboardHeader({ truckNumber }: TruckDashboardHead
       >
         <ChevronLeft className="h-5 w-5" />
         <Truck className="h-5 w-5 text-blue-400" />
-        <span>Fleet / {truckNumber}</span>
+        <span>{breadcum}</span>
       </button>
     </div>
   );
