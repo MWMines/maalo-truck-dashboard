@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 import axios from "axios";
 import { format } from "date-fns";
-import { Plus, ListFilter, Search, CircleUser, ArrowDown, Loader2 } from "lucide-react";
+import { Plus, X, ListFilter, Search, CalendarIcon, CircleUser, ArrowDown, Loader2 } from "lucide-react";
 
 import FilterPopup from "@/app/(main)/dashboard/trips/filter-popup";
 import { TripTablePagination } from "@/components/data-table/trip-table-pagination";
@@ -212,15 +212,12 @@ export default function TripsTableComponent() {
           <div className="flex items-center gap-2">
             {dateRange[0] && dateRange[1] && (
               <div className="bg-muted text-muted-foreground flex items-center gap-2 rounded-md border px-3 py-1 text-sm">
+                <CalendarIcon className="text-muted-foreground mr-2 h-4 w-4" />
                 <span>
-                  📅 {format(dateRange[0], "MMM dd, yyyy")} - {format(dateRange[1], "MMM dd, yyyy")}
+                  {format(dateRange[0], "MMM dd, yyyy")} - {format(dateRange[1], "MMM dd, yyyy")}
                 </span>
-                <button
-                  onClick={resetFilter}
-                  className="ml-2 text-xs text-red-500 hover:underline"
-                  title="Clear filter"
-                >
-                  ✕
+                <button onClick={resetFilter} className="ml-2 text-xs text-gray-500" title="Clear filter">
+                  <X className="h-4 w-4 cursor-pointer" />
                 </button>
               </div>
             )}
