@@ -3,7 +3,7 @@ import packageJson from "../../package.json";
 const currentYear = new Date().getFullYear();
 
 export const APP_CONFIG = {
-  name: "Maalo Truck",
+  name: "Dr Lime",
   version: packageJson.version,
   copyright: `© ${currentYear}, Studio Admin.`,
   meta: {

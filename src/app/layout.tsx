@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { APP_CONFIG } from "@/config/app-config";
 
 import "./globals.css";
+import { DateRangeProvider } from "./(main)/context/date-range-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="en" className="light" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange enableSystem={false}>
-          {children}
+          <DateRangeProvider>{children}</DateRangeProvider>
           <Toaster />
         </ThemeProvider>
       </body>
