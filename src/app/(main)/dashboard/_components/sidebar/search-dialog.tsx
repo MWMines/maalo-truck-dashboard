@@ -1,7 +1,9 @@
 "use client";
 import * as React from "react";
 
-import { ChartPie, Grid2X2, ChartLine, ShoppingBag, BookA, Forklift, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { ChartPie, Grid2X2, Search, Command } from "lucide-react";
 
 import {
   CommandDialog,
@@ -14,13 +16,15 @@ import {
 } from "@/components/ui/command";
 
 const searchItems = [
-  { group: "Dashboards", icon: ChartPie, label: "Default" },
-  { group: "Dashboards", icon: Grid2X2, label: "Fleet", disabled: true },
-  { group: "Dashboards", icon: Grid2X2, label: "Trips", disabled: true },
+  { group: "Dashboards", icon: ChartPie, label: "Default", route: "/dashboard/default" },
+  { group: "Dashboards", icon: Grid2X2, label: "Fleet", route: "/dashboard/fleet" },
+  { group: "Dashboards", icon: Grid2X2, label: "Trips", route: "/dashboard/trips" },
 ];
 
 export function SearchDialog() {
   const [open, setOpen] = React.useState(false);
+  const router = useRouter();
+
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "j" && (e.metaKey || e.ctrlKey)) {
@@ -35,13 +39,15 @@ export function SearchDialog() {
   return (
     <>
       <div
-        className="text-muted-foreground flex cursor-pointer items-center gap-2 text-sm"
+        className="text-muted-foreground flex cursor-pointer items-center gap-4 text-sm"
         onClick={() => setOpen(true)}
       >
-        <Search className="size-4" />
-        Search
-        <kbd className="bg-muted inline-flex h-5 items-center gap-1 rounded border px-1.5 text-[10px] font-medium select-none">
-          <span className="text-xs">⌘</span>J
+        <Search className="size-4.5" />
+
+        <kbd className="bg-muted inline-flex h-7 w-8 items-center gap-1 rounded border px-1.5 text-[10px] font-medium select-none">
+          <span className="text-xs">
+            <Command className="size-4.5" />
+          </span>
         </kbd>
       </div>
       <CommandDialog open={open} onOpenChange={setOpen}>
@@ -55,10 +61,18 @@ export function SearchDialog() {
                 {searchItems
                   .filter((item) => item.group === group)
                   .map((item) => (
-                    <CommandItem className="!py-1.5" key={item.label} onSelect={() => setOpen(false)}>
+                    <CommandItem
+                      className="!py-1.5"
+                      key={item.label}
+                      onSelect={() => {
+                        setOpen(false);
+                        if (item.route) {
+                          router.push(item.route);
+                        }
+                      }}
+                    >
                       {item.icon && <item.icon />}
                       <span>{item.label}</span>
-                      {/* {item.shortcut && <CommandShortcut>{item.shortcut}</CommandShortcut>} */}
                     </CommandItem>
                   ))}
               </CommandGroup>
